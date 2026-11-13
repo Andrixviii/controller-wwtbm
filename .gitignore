@@ -1,0 +1,48 @@
+# File Binary & Hasil Kompilasi
+# (Menghindari file executable agar tidak ikut ter-commit)
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Binary hasil build spesifik project
+# Hapus tanda '#' jika nama folder project Anda adalah 'app' atau 'main'
+# /app
+# /main
+/bin/
+/dist/
+/build/
+
+# File Test & Code Coverage
+*.test
+*.out
+coverage.txt
+coverage.html
+
+# Dependency & Vendor
+# Hapus tanda '#' di bawah ini jika Anda tidak menggunakan folder vendor (disarankan untuk Go Modules)
+# vendor/
+
+# Go Workspace File
+go.work
+go.work.sum
+
+# Environment Variables & Rahasia
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Editor & IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Sistem Operasi (macOS & Windows)
+.DS_Store
+Thumbs.db
+Desktop.ini
