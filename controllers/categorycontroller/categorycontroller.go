@@ -1,12 +1,13 @@
 package categorycontroller
 
 import (
-	"go-web/entitas"
+	questions "go-web/entitas"
 	"go-web/models/question_model"
 	"html/template"
 	"math"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
@@ -16,9 +17,27 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		currentPage = 1
 	}
 
+	search := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("search")))
+	difficulty := r.URL.Query().Get("difficulty")
+
 	limit := 5
-	questions := question_model.GetAll()
-	totalItems := len(questions)
+	allQuestions := question_model.GetAll()
+
+	// Filter search + difficulty (in-memory, pagination sudah in-memory juga)
+	if search != "" || difficulty != "" {
+		var filtered []questions.Questions
+		for _, q := range allQuestions {
+			if difficulty != "" && !strings.EqualFold(q.Difficulty, difficulty) {
+				continue
+			}
+			if search != "" && !strings.Contains(strings.ToLower(q.Question), search) {
+				continue
+			}
+			filtered = append(filtered, q)
+		}
+		allQuestions = filtered
+	}
+	totalItems := len(allQuestions)
 
 	totalPages := int(math.Ceil(float64(totalItems) / float64(limit)))
 	if totalPages == 0 {
@@ -36,9 +55,9 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		end = totalItems
 	}
 
-	pagedQuestions := questions
+	pagedQuestions := allQuestions
 	if totalItems > 0 {
-		pagedQuestions = questions[offset:end]
+		pagedQuestions = allQuestions[offset:end]
 	}
 
 	prevPage := currentPage - 1
@@ -57,6 +76,8 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		"TotalPages":  totalPages,
 		"PrevPage":    prevPage,
 		"NextPage":    nextPage,
+		"Search":      search,
+		"Difficulty":  difficulty,
 	}
 
 	tmpl := template.Must(template.ParseFiles("view/actions/index.html"))
@@ -100,9 +121,60 @@ func Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func Edit(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("Id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil || id < 1 {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
 
+	if r.Method == "GET" {
+		question := question_model.GetById(id)
+
+		temp, err := template.ParseFiles("view/actions/edit.html")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		temp.Execute(w, question)
+		return
+	}
+
+	if r.Method == "POST" {
+		var q questions.Questions
+
+		q.Id = uint(id)
+		q.Question = r.FormValue("question")
+		q.Option_a = r.FormValue("option_a")
+		q.Option_b = r.FormValue("option_b")
+		q.Option_c = r.FormValue("option_c")
+		q.Option_d = r.FormValue("option_d")
+		q.Correct_answer = r.FormValue("correct_answer")
+		q.Difficulty = r.FormValue("difficulty")
+
+		err := question_model.Update(q)
+		if err != nil {
+			http.Error(w, "Gagal mengupdate data: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		http.Redirect(w, r, "/actions", http.StatusSeeOther)
+	}
 }
 
 func Delete(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("Id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil || id < 1 {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
 
+	err = question_model.Delete(id)
+	if err != nil {
+		http.Error(w, "Gagal menghapus data: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/actions", http.StatusSeeOther)
 }

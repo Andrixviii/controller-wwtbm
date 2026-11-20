@@ -1,88 +1,317 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-B/GM4XqrwHnWXNOWMbloTmrYXZg10cakYGmpfsR/bbzQ6JAJI4ihuyADKLnBgrCe" crossorigin="anonymous">
-	<title>Document</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-B/GM4XqrwHnWXNOWMbloTmrYXZg10cakYGmpfsR/bbzQ6JAJI4ihuyADKLnBgrCe" crossorigin="anonymous">
+	<title>Daftar Pertanyaan | Quiz Admin</title>
+	<style>
+		:root {
+			--bg-canvas: #f7f5f0;
+			--bg-surface: #ffffff;
+			--border-subtle: #e7e5df;
+			--border-hover: #d1ccc4;
+			--accent-primary: #2563eb;
+			--accent-hover: #1d4ed8;
+			--accent-foreground: #ffffff;
+			--accent-warning: #d97706;
+			--accent-danger: #dc2626;
+			--text-primary: #1a1917;
+			--text-secondary: #6e6b65;
+			--text-muted: #9a968e;
+			--radius-sm: 8px;
+			--radius-md: 12px;
+		}
+
+		* { box-sizing: border-box; }
+		html, body { margin: 0; }
+		body {
+			font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", sans-serif;
+			color: var(--text-primary);
+			background: var(--bg-canvas);
+			line-height: 1.5;
+		}
+
+		.navbar {
+			background: var(--bg-surface);
+			color: var(--text-primary);
+			border-bottom: 1px solid var(--border-subtle);
+			padding: 0.75rem 1rem;
+		}
+		.navbar a { color: var(--text-primary); text-decoration: none; font-weight: 500; }
+		.navbar a:hover { color: var(--accent-primary); }
+
+		.container {
+			max-width: 1960px;
+			margin: 0 auto;
+			padding: 0 1.5rem;
+			padding-top: 12px;
+		}
+
+		h2 {
+			font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem);
+			font-weight: 700;
+			letter-spacing: -0.02em;
+			margin: 0 0 1rem;
+		}
+
+		hr {
+			border: none;
+			border-top: 1px solid var(--border-subtle);
+			margin: 1.5rem 0;
+		}
+
+		.card {
+			background: var(--bg-surface);
+			border: 1px solid var(--border-subtle);
+			border-radius: var(--radius-md);
+			padding: 0;
+			overflow: hidden;
+		}
+		.card-body { padding: 2rem; }
+		@media (max-width: 640px) {
+			.card-body { padding: 1.25rem; }
+			.container { padding: 0 1rem; }
+		}
+
+		.table-responsive {
+			overflow-x: auto;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		.table {
+			width: 100%;
+			border-collapse: collapse;
+			margin: 0;
+		}
+		.table th, .table td {
+			padding: 0.75rem 1rem;
+			border-bottom: 1px solid var(--border-subtle);
+			text-align: left;
+			vertical-align: middle;
+		}
+		.table th {
+			font-size: 0.8125rem;
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 0.04em;
+			color: var(--text-secondary);
+			background: var(--bg-canvas);
+		}
+		.table tbody tr:hover {
+			background: #faf8f3;
+		}
+
+		.btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 0.5rem;
+			padding: 0.5rem 1rem;
+			font-size: 0.875rem;
+			font-weight: 600;
+			border: 1px solid transparent;
+			border-radius: var(--radius-sm);
+			cursor: pointer;
+			transition: background-color 140ms ease-out, transform 80ms ease-out, filter 140ms ease-out;
+			user-select: none;
+			min-height: 38px;
+			text-decoration: none;
+		}
+		.btn-primary {
+			background: var(--accent-primary);
+			color: var(--accent-foreground);
+		}
+		.btn-primary:hover { filter: brightness(1.08); }
+		.btn-primary:active { transform: scale(0.97); }
+
+		.btn-warning {
+			background: var(--accent-warning);
+			color: #ffffff;
+		}
+		.btn-warning:hover { filter: brightness(1.08); }
+		.btn-warning:active { transform: scale(0.97); }
+
+		.btn-danger {
+			background: var(--accent-danger);
+			color: #ffffff;
+		}
+		.btn-danger:hover { filter: brightness(1.08); }
+		.btn-danger:active { transform: scale(0.97); }
+
+		.actions-cell {
+			display: flex;
+			gap: 0.5rem;
+			flex-wrap: wrap;
+		}
+
+		.pagination {
+			display: flex;
+			gap: 0.25rem;
+			list-style: none;
+			padding: 0;
+			margin: 1.5rem 0 0;
+			justify-content: center;
+			align-items: center;
+		}
+		.page-link {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			padding: 0.5rem 0.875rem;
+			min-height: 38px;
+			border: 1px solid var(--border-subtle);
+			border-radius: var(--radius-sm);
+			color: var(--text-primary);
+			text-decoration: none;
+			font-size: 0.875rem;
+			font-weight: 500;
+			background: var(--bg-surface);
+		}
+		.page-item.active .page-link {
+			background: var(--accent-primary);
+			color: #ffffff;
+			border-color: var(--accent-primary);
+		}
+		.page-item.disabled .page-link {
+			color: var(--text-muted);
+			background: var(--bg-canvas);
+			cursor: not-allowed;
+		}
+
+		.badge-difficulty {
+			display: inline-block;
+			padding: 0.25rem 0.625rem;
+			font-size: 0.75rem;
+			font-weight: 600;
+			border-radius: 9999px;
+			text-transform: capitalize;
+			background: #eef2ff;
+			color: #3730a3;
+		}
+		.form-control {
+			width: 100%;
+			padding: 0.625rem 0.875rem;
+			font-size: 1rem;
+			border: 1px solid var(--border-subtle);
+			border-radius: var(--radius-sm);
+			background: var(--bg-surface);
+			transition: border-color 140ms ease-out, box-shadow 140ms ease-out;
+		}
+		.form-control:focus {
+			border-color: var(--accent-primary);
+			outline: none;
+			box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+		}
+		select.form-control { appearance: none; }
+		.btn-secondary {
+			background: var(--bg-surface);
+			color: var(--text-primary);
+			border-color: var(--border-subtle);
+		}
+		.btn-secondary:hover { background: #f4f2ea; border-color: var(--border-hover); }
+		.btn-secondary:active { transform: scale(0.97); }
+
+		.btn-sm {
+			padding: 0.375rem 0.75rem;
+			font-size: 0.8125rem;
+			min-height: 32px;
+		}
+	</style>
 </head>
 <body>
 
-    <!--start nav-->
-    <nav class="navbar sm:navbar-expand bg-1 fg-2">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">Navbar</a>
-        <button class="btn-icon navbar-toggler" type="button" data-bs-toggle="drawer" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon" aria-hidden="true"></span>
-        </button>
-        <dialog class="drawer drawer-end" tabindex="-1" id="navbarNav" aria-labelledby="navbarNavLabel">
-          <div class="drawer-header">
-            <h5 class="drawer-title" id="navbarNavLabel">Menu</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="drawer" aria-label="Close"></button>
-          </div>
-          <div class="drawer-body">
-            <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link" href="/">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/actions">Features</a>
-              </li>
-            </ul>
-          </div>
-        </dialog>
-      </div>
-    </nav>
-    <!--end nav-->
+	<!--start nav-->
+	<nav class="navbar">
+		<div class="container-fluid d-flex justify-content-between align-items-center">
+			<a class="navbar-brand fw-bold" href="/">Dashboard</a>
+		</div>
+	</nav>
+	<!--end nav-->
 
-    <div class="container mt-5">
-      <h2>List Pertanyaan</h2>
-      <hr>
-      <a href="/actions/create" class="btn-solid theme-primary mb-3">Tambah Pertanyaan</a>
-      <table class="table table-bordered table-hover">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Question</th>
-            <th>Difficulty</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-            <!--mengambil value map dari controller-->
-          {{range .questions}}
-          <tr>
-            <td>{{.Id}}</td>
-            <td>{{.Question}}</td>
-            <td>{{.Difficulty}}</td>
-            <td class="gap-2">
-              <a href="/actions/edit?Id={{.Id}}" class="btn-solid theme-warning text-white">Edit</a>
-              <a href="/actions/delete?Id={{.Id}}" class="btn-solid theme-danger text-white" onclick="return confirm('Are you sure?')">Delete</a>
-            </td>
-          </tr>
-          {{end}}
-        </tbody>
-      </table>
+	<div class="container">
+		<main>
+			<div class="card">
+				<div class="card-body">
+					<div class="mb-4">
+						<a href="/" class="btn btn-secondary btn-sm mb-3">← Kembali ke Beranda</a>
+					</div>
+					<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+						<h2 class="m-0">Daftar Pertanyaan</h2>
+						<a href="/actions/create" class="btn btn-primary">+ Tambah Pertanyaan</a>
+					</div>
+					<hr>
 
-      <nav aria-label="Page navigation">
-          <ul class="pagination">
-            {{if gt .CurrentPage 1}}
-            <li class="page-item"><a class="page-link" href="/actions?page={{.PrevPage}}">Previous</a></li>
-            {{else}}
-            <li class="page-item disabled"><span class="page-link">Previous</span></li>
-            {{end}}
+					<form method="GET" action="/actions" class="filter-bar mb-4" style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:flex-end; padding-bottom: 12px;">
+						<div class="flex-grow-1" style="min-width:200px;">
+							<label for="search">Cari Pertanyaan</label>
+							<input type="text" id="search" name="search" class="form-control" placeholder="Cari pertanyaan..." value="{{.Search}}">
+						</div>
+						<div style="min-width:160px;">
+							<label for="difficulty">Tingkat Kesulitan</label>
+							<select id="difficulty" name="difficulty" class="form-control">
+								<option value="" {{if eq .Difficulty ""}}selected{{end}}>Semua</option>
+								<option value="easy" {{if eq .Difficulty "easy"}}selected{{end}}>Easy</option>
+								<option value="medium" {{if eq .Difficulty "medium"}}selected{{end}}>Medium</option>
+								<option value="hard" {{if eq .Difficulty "hard"}}selected{{end}}>Hard</option>
+							</select>
+						</div>
+						<div style="display:flex; gap:0.5rem;">
+							<button type="submit" class="btn btn-primary">Cari</button>
+							<a href="/actions" class="btn btn-secondary">Reset</a>
+						</div>
+					</form>
 
-            <li class="page-item active">
-              <span class="page-link">Halaman {{.CurrentPage}} dari {{.TotalPages}}</span>
-            </li>
+					<div class="table-responsive">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>ID</th>
+									<th>Pertanyaan</th>
+									<th>Tingkat Kesulitan</th>
+									<th>Aksi</th>
+								</tr>
+							</thead>
+							<tbody>
+								{{range .questions}}
+								<tr>
+									<td>{{.Id}}</td>
+									<td>{{.Question}}</td>
+									<td><span class="badge-difficulty">{{.Difficulty}}</span></td>
+									<td>
+										<div class="actions-cell">
+											<a href="/actions/edit?Id={{.Id}}" class="btn btn-warning">Edit</a>
+											<a href="/actions/delete?Id={{.Id}}" class="btn btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">Hapus</a>
+										</div>
+									</td>
+								</tr>
+								{{end}}
+							</tbody>
+						</table>
+					</div>
 
-            {{if lt .CurrentPage .TotalPages}}
-            <li class="page-item"><a class="page-link" href="/actions?page={{.NextPage}}">Next</a></li>
-            {{else}}
-            <li class="page-item disabled"><span class="page-link">Next</span></li>
-            {{end}}
-          </ul>
-        </nav>
-    </div>
+					<nav aria-label="Page navigation">
+						<ul class="pagination">
+							{{if gt .CurrentPage 1}}
+							<li class="page-item"><a class="page-link" href="/actions?page={{.PrevPage}}&search={{.Search}}&difficulty={{.Difficulty}}">Previous</a></li>
+							{{else}}
+							<li class="page-item disabled"><span class="page-link">Previous</span></li>
+							{{end}}
+
+							<li class="page-item active">
+								<span class="page-link">Halaman {{.CurrentPage}} dari {{.TotalPages}}</span>
+							</li>
+
+							{{if lt .CurrentPage .TotalPages}}
+							<li class="page-item"><a class="page-link" href="/actions?page={{.NextPage}}&search={{.Search}}&difficulty={{.Difficulty}}">Next</a></li>
+							{{else}}
+							<li class="page-item disabled"><span class="page-link">Next</span></li>
+							{{end}}
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</main>
+	</div>
 </body>
 </html>

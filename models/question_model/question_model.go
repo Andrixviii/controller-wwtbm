@@ -1,6 +1,7 @@
 package question_model
 
 import (
+	"database/sql"
 	"go-web/config"
 	questions "go-web/entitas"
 )
@@ -52,4 +53,30 @@ func Create(q questions.Questions) (int64, error) {
 	return id, nil
 }
 
+func Update(q questions.Questions) error {
+	_, err := config.DB.Exec(
+		`UPDATE questionsnew
+		SET question = $1, option_a = $2, option_b = $3, option_c = $4, option_d = $5,
+		    correct_answer = $6, difficulty = $7
+		WHERE id = $8`,
+		q.Question, q.Option_a, q.Option_b, q.Option_c, q.Option_d, q.Correct_answer, q.Difficulty, q.Id,
+	)
+	return err
+}
+
+func Delete(id int) error {
+	result, err := config.DB.Exec(`DELETE FROM questionsnew WHERE id = $1`, id)
+	if err != nil {
+		return err
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if affected == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
+}
 
