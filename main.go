@@ -6,10 +6,15 @@ import (
 	"go-web/controllers/homecontroller"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
 
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 	// pemangilan koneksi
 	config.ConnectionDB()
 
@@ -20,7 +25,7 @@ func main() {
 	http.HandleFunc("/actions/edit", categorycontroller.Edit)
 	http.HandleFunc("/actions/delete", categorycontroller.Delete)
 
-	log.Println("Server is running on port 8080")
-	http.ListenAndServe(":8080", nil)
-
+	addr := ":" + port
+	// log.Printf("Berjalan di http://localhost%s\n", addr)
+	log.Fatal(http.ListenAndServe(addr, nil))
 }
